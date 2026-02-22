@@ -4,6 +4,53 @@ const supabaseUrl = 'https://hxzcdicsrymdmxmonsgb.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4emNkaWNzcnltZG14bW9uc2diIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3NTU1NzksImV4cCI6MjA4NzMzMTU3OX0.CRq1y0fp0D9TWayM2v2eVMvoK4BtGVK0ZF6BSJ3rAkM';
 const db = createClient(supabaseUrl, supabaseKey);
 
+// --- Authentication Logic ---
+const loginSection = document.getElementById('login-section');
+const appSection = document.getElementById('app-section');
+
+// Check if you are already logged in
+async function checkUser() {
+    const { data: { session } } = await db.auth.getSession();
+    if (session) {
+        // User is logged in, show the app
+        loginSection.style.display = 'none';
+        appSection.style.display = 'block';
+        renderHeatmap(); // Only load the heatmap if logged in
+    } else {
+        // No user, show login screen
+        loginSection.style.display = 'block';
+        appSection.style.display = 'none';
+    }
+}
+
+// Handle Login Button Click
+document.getElementById('login-btn').addEventListener('click', async () => {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const errorMsg = document.getElementById('login-error');
+
+    const { data, error } = await db.auth.signInWithPassword({
+        email: email,
+        password: password,
+    });
+
+    if (error) {
+        errorMsg.textContent = error.message;
+        errorMsg.style.display = 'block';
+    } else {
+        checkUser(); // Success! Refresh the view
+    }
+});
+
+// Handle Logout
+document.getElementById('logout-btn').addEventListener('click', async () => {
+    await db.auth.signOut();
+    checkUser(); // Refresh the view to show login screen
+});
+
+// Run this check immediately when the page loads
+checkUser();
+
 // --- 2. Timer Variables ---
 let timeLeft = 50 * 60; // 50 minutes in seconds
 let timerId = null;
