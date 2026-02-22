@@ -12,8 +12,8 @@ const db = createClient(supabaseUrl, supabaseKey);
 // ==========================================
 const display = document.getElementById('time-display');
 const modeText = document.getElementById('mode-text');
-const startBtn = document.getElementById('start-btn');
-const stopBtn = document.getElementById('stop-btn');
+const mainBtn = document.getElementById('main-action-btn');
+const stopBtn = document.getElementById('stop-action-btn');
 const circle = document.querySelector('.progress-ring__circle');
 const circleCircumference = 722; 
 
@@ -70,7 +70,6 @@ document.getElementById('configure-btn').addEventListener('click', toggleSidebar
 document.getElementById('close-sidebar').addEventListener('click', toggleSidebar);
 overlay.addEventListener('click', toggleSidebar);
 
-// Stepper Button Logic
 function setupStepper(inputId, minusId, plusId, min, max) {
     const input = document.getElementById(inputId);
     document.getElementById(minusId).addEventListener('click', () => {
@@ -91,8 +90,8 @@ document.getElementById('save-settings-btn').addEventListener('click', () => {
     configBreak = parseInt(document.getElementById('break-input').value);
     configIterations = parseInt(document.getElementById('iter-input').value);
     
-    if (timerId === null) {
-        resetTimerState(); // Apply immediately if timer is stopped
+    if (timerState === 'IDLE') {
+        resetTimerState(); 
     } else {
         alert("Settings saved. They will apply after the current countdown ends.");
     }
@@ -103,19 +102,22 @@ document.getElementById('save-settings-btn').addEventListener('click', () => {
 // 5. POMODORO STATE MACHINE & TIMER LOGIC
 // ==========================================
 let currentIteration = 1;
-let isFocusMode = true; // true = Focus, false = Break
+let isFocusMode = true; 
 let totalTime = configFocus * 60; 
 let timeLeft = totalTime; 
 let timerId = null;
+let timerState = 'IDLE'; // States: IDLE, RUNNING, PAUSED
 
 function resetTimerState() {
     isFocusMode = true;
     currentIteration = 1;
     totalTime = configFocus * 60;
     timeLeft = totalTime;
+    timerState = 'IDLE';
     modeText.textContent = `Focus 1/${configIterations}`;
-    circle.setAttribute('stroke', '#23c45e'); // Green
+    circle.setAttribute('stroke', '#23c45e'); 
     updateDisplay();
+    updateButtons();
 }
 
 function updateDisplay() {
@@ -129,12 +131,26 @@ function updateDisplay() {
     }
 }
 
-function startTimer() {
-    if (timerId !== null) return; 
-    
-    startBtn.style.backgroundColor = isFocusMode ? '#e9f8f0' : '#eaf2ff';
-    startBtn.style.color = isFocusMode ? '#23c45e' : '#4a90e2';
-    
+function updateButtons() {
+    if (timerState === 'IDLE') {
+        mainBtn.textContent = '▶';
+        mainBtn.style.backgroundColor = '#ff6b6b';
+        mainBtn.style.color = 'white';
+        stopBtn.style.display = 'none';
+    } else if (timerState === 'RUNNING') {
+        mainBtn.textContent = '⏸';
+        mainBtn.style.backgroundColor = '#f0f0f4';
+        mainBtn.style.color = '#ff6b6b';
+        stopBtn.style.display = 'none';
+    } else if (timerState === 'PAUSED') {
+        mainBtn.textContent = '▶';
+        mainBtn.style.backgroundColor = '#23c45e'; // Green for resume
+        mainBtn.style.color = 'white';
+        stopBtn.style.display = 'flex'; // Show stop button
+    }
+}
+
+function startInterval() {
     timerId = setInterval(() => {
         timeLeft--;
         updateDisplay();
@@ -144,62 +160,68 @@ function startTimer() {
             timerId = null;
             
             if (isFocusMode) {
-                saveSession(configFocus); // Only log actual study time to Supabase
+                saveSession(configFocus); 
                 
                 if (currentIteration < configIterations) {
-                    // Switch to Break Mode
                     isFocusMode = false;
                     totalTime = configBreak * 60;
                     timeLeft = totalTime;
                     modeText.textContent = `Break ${currentIteration}/${configIterations}`;
-                    circle.setAttribute('stroke', '#4a90e2'); // Blue ring for break
+                    circle.setAttribute('stroke', '#4a90e2'); 
                     alert("Focus complete! Time for a break.");
                 } else {
-                    // Entire Pomodoro sequence is done
                     alert("All iterations complete! Data logged.");
                     resetTimerState();
+                    return; // Exit out, let resetTimerState handle it
                 }
             } else {
-                // Switch back to Focus Mode
                 isFocusMode = true;
                 currentIteration++;
                 totalTime = configFocus * 60;
                 timeLeft = totalTime;
                 modeText.textContent = `Focus ${currentIteration}/${configIterations}`;
-                circle.setAttribute('stroke', '#23c45e'); // Green ring for focus
+                circle.setAttribute('stroke', '#23c45e'); 
                 alert("Break is over! Time to focus.");
             }
             
-            startBtn.style.backgroundColor = '#f0f0f4';
-            startBtn.style.color = '#a0a0a5';
+            timerState = 'IDLE';
             updateDisplay();
+            updateButtons();
         }
     }, 1000);
 }
 
-function stopTimer() {
-    if (timerId !== null) {
+// Handle Play/Pause/Resume Logic
+mainBtn.addEventListener('click', () => {
+    if (timerState === 'IDLE' || timerState === 'PAUSED') {
+        timerState = 'RUNNING';
+        updateButtons();
+        startInterval();
+    } else if (timerState === 'RUNNING') {
+        timerState = 'PAUSED';
+        updateButtons();
         clearInterval(timerId);
         timerId = null;
     }
-    
-    if (isFocusMode) {
-        const minutesStudied = configFocus - Math.floor(timeLeft / 60);
-        if (minutesStudied > 0) {
-            saveSession(minutesStudied);
-            alert(`Session stopped early. Logged ${minutesStudied} minutes.`);
-        }
-    } else {
-        alert("Break ended early.");
-    }
-    
-    startBtn.style.backgroundColor = '#f0f0f4';
-    startBtn.style.color = '#a0a0a5';
-    resetTimerState();
-}
+});
 
-startBtn.addEventListener('click', startTimer);
-stopBtn.addEventListener('click', stopTimer);
+// Handle the explicit Stop Button Logic
+stopBtn.addEventListener('click', () => {
+    if (timerState === 'PAUSED') {
+        clearInterval(timerId);
+        timerId = null;
+        
+        if (isFocusMode) {
+            const minutesStudied = configFocus - Math.floor(timeLeft / 60);
+            if (minutesStudied > 0) {
+                saveSession(minutesStudied);
+                alert(`Session stopped early. Logged ${minutesStudied} minutes.`);
+            }
+        }
+        
+        resetTimerState();
+    }
+});
 
 // ==========================================
 // 6. DATABASE & HEATMAP LOGIC
@@ -228,14 +250,20 @@ async function renderHeatmap() {
 
     const heatmapData = Object.keys(dailyTotals).map(dateStr => { return { date: dateStr, total: dailyTotals[dateStr] }; });
 
+    const isMobile = window.innerWidth < 768;
+    const displayRange = isMobile ? 3 : 6; 
+    
+    const startMonth = new Date();
+    startMonth.setMonth(startMonth.getMonth() - (displayRange - 1));
+
     const cal = new CalHeatmap();
     cal.paint({
         itemSelector: '#cal-heatmap',
         domain: { type: 'month' },
         subDomain: { type: 'day', width: 14, height: 14, gutter: 4, radius: 4 },
         data: { source: heatmapData, x: 'date', y: 'total' },
-        date: { start: new Date(new Date().setMonth(new Date().getMonth() - 2)) }, 
-        range: 6, 
+        date: { start: startMonth }, 
+        range: displayRange, 
         scale: {
             color: { type: 'threshold', range: ['#f0f0f4', '#ffdcdc', '#ffb0b0', '#ff8484', '#ff6b6b'], domain: [30, 60, 120, 180] }
         }
