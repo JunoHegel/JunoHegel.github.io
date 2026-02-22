@@ -1,1 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Law Study Tracker</title>
+    
+    <link rel="stylesheet" href="style.css">
 
+    <link rel="stylesheet" href="https://unpkg.com/cal-heatmap/dist/cal-heatmap.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Study Session</h1>
+        
+        <div class="timer-section">
+            <h2 id="time-display">50:00</h2>
+            
+            <div class="controls">
+                <button id="start-btn">Start Focus</button>
+                <button id="stop-btn">Stop/Log Session</button>
+            </div>
+
+            <div class="session-details">
+                <select id="subject-select">
+                    <option value="Civil Law">Civil Law</option>
+                    <option value="Remedial Law">Remedial Law</option>
+                    <option value="Criminal Law">Criminal Law</option>
+                </select>
+
+                <select id="method-select">
+                    <option value="Active Recall">Active Recall</option>
+                    <option value="Case Digests">Case Digests</option>
+                    <option value="Reading">Reading</option>
+                </select>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="heatmap-section">
+            <h3>Consistency Heatmap</h3>
+            <div id="cal-heatmap"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <script src="https://unpkg.com/cal-heatmap/dist/cal-heatmap.min.js"></script>
+
+    <script src="app.js"></script>
+
+</body>
+</html>
