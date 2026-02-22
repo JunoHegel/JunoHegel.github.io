@@ -2,7 +2,7 @@
 
 body { 
     font-family: 'Plus Jakarta Sans', sans-serif; 
-    background-color: #fdfafb; /* Soft pink/white background from the image */
+    background-color: #fdfafb; 
     color: #1c1c1e; 
     display: flex; 
     justify-content: center; 
@@ -15,58 +15,38 @@ body {
 .container { 
     background: #ffffff; 
     padding: 30px; 
-    border-radius: 40px; /* Very round corners like a mobile phone screen */
-    box-shadow: 0 24px 48px rgba(255, 107, 107, 0.08); /* Faint coral shadow */
+    border-radius: 40px; 
+    box-shadow: 0 24px 48px rgba(255, 107, 107, 0.08); 
     text-align: center; 
     max-width: 420px; 
     width: 100%; 
+    box-sizing: border-box;
 }
 
 /* Header */
-.app-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-}
+.app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
 .app-header h2 { font-size: 1.2rem; font-weight: 700; margin: 0; }
-#logout-btn { background: none; border: none; color: #a0a0a5; font-weight: 600; cursor: pointer; }
+#logout-btn { background: none; border: none; color: #a0a0a5; font-weight: 600; cursor: pointer; padding: 0; }
+#logout-btn:hover { color: #ff6b6b; }
 
 /* Task Card */
 .task-card {
-    display: flex;
-    align-items: center;
-    background: #ffffff;
-    border: 1px solid #f0f0f4;
-    border-radius: 20px;
-    padding: 15px;
-    margin-bottom: 40px;
+    display: flex; align-items: center; background: #ffffff;
+    border: 1px solid #f0f0f4; border-radius: 20px; padding: 15px; margin-bottom: 40px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.02);
 }
-.task-icon {
-    background: #e9f8f0;
-    font-size: 1.5rem;
-    padding: 12px;
-    border-radius: 16px;
-    margin-right: 15px;
-}
+.task-icon { background: #e9f8f0; font-size: 1.5rem; padding: 12px; border-radius: 16px; margin-right: 15px; }
 .task-info { display: flex; flex-direction: column; align-items: flex-start; flex: 1; }
-.clean-select { border: none; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 1rem; color: #1c1c1e; background: transparent; cursor: pointer; width: 100%; outline: none; appearance: none; padding: 0;}
+.clean-select { border: none; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 1rem; color: #1c1c1e; background: transparent; cursor: pointer; width: 100%; outline: none; appearance: none; padding: 0; }
 .sub-select { font-weight: 500; font-size: 0.85rem; color: #a0a0a5; margin-top: 4px; }
 
 /* Circular Timer Wrapper */
 .timer-wrapper {
-    position: relative;
-    width: 260px;
-    height: 260px;
-    margin: 0 auto 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    position: relative; width: 260px; height: 260px; margin: 0 auto 40px;
+    display: flex; justify-content: center; align-items: center;
 }
 .progress-ring { transform: rotate(-90deg); }
 .progress-ring__circle {
-    /* 2 * PI * 115(radius) = 722 */
     stroke-dasharray: 722; 
     stroke-dashoffset: 0;
     transition: stroke-dashoffset 1s linear;
@@ -76,31 +56,22 @@ body {
 /* Timer Text inside the circle */
 .timer-text { position: absolute; text-align: center; }
 #time-display { font-size: 3.8rem; font-weight: 800; letter-spacing: -2px; color: #1c1c1e; margin: 0; }
-.timer-text p { font-size: 0.85rem; color: #a0a0a5; margin: 5px 0 0 0; font-weight: 500;}
+.timer-text p { font-size: 0.85rem; color: #a0a0a5; margin: 5px 0 0 0; font-weight: 500; }
 
 /* Controls */
 .controls { display: flex; justify-content: center; align-items: center; gap: 20px; }
-.btn-circle {
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: transform 0.2s;
-}
+.btn-circle { border-radius: 50%; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: transform 0.2s; }
 .btn-circle:hover { transform: scale(1.05); }
-
-/* The big coral pause/stop button */
 .btn-primary { width: 72px; height: 72px; background-color: #ff6b6b; color: white; font-size: 1.5rem; box-shadow: 0 8px 24px rgba(255, 107, 107, 0.4); }
-
-/* The smaller grey play/start button */
 .btn-secondary { width: 54px; height: 54px; background-color: #f0f0f4; color: #a0a0a5; font-size: 1.2rem; }
 
 hr { border: 0; border-top: 1px solid #f0f0f4; margin: 40px 0; }
 .heatmap-section h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: #a0a0a5; font-weight: 700; margin-bottom: 20px; }
-#cal-heatmap { display: flex; justify-content: center; }
+#cal-heatmap { display: flex; justify-content: center; overflow-x: auto;}
 
 /* Login Inputs */
-input { width: 100%; padding: 16px; margin-bottom: 15px; border: 1px solid #f0f0f4; border-radius: 16px; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif;}
-.pill-btn { width: 100%; padding: 16px; border: none; border-radius: 50px; background: #ff6b6b; color: white; font-weight: 700; cursor: pointer;}
+#login-section h1 { font-size: 1.5rem; color: #1c1c1e; margin-bottom: 20px;}
+input { width: 100%; padding: 16px; margin-bottom: 15px; border: 1px solid #f0f0f4; border-radius: 16px; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; background-color: #fafafa;}
+input:focus { outline: none; border-color: #ff6b6b; }
+.pill-btn { width: 100%; padding: 16px; border: none; border-radius: 50px; background: #ff6b6b; color: white; font-weight: 700; font-size: 1rem; cursor: pointer; transition: background 0.2s;}
+.pill-btn:hover { background: #e85a5a; }
