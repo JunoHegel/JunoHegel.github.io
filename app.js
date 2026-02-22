@@ -172,7 +172,8 @@ async function renderHeatmap() {
         scale: {
             color: {
                 type: 'threshold',
-                range: ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'], 
+                // Updated to aesthetic soft matcha greens
+                range: ['#f4f2ee', '#c3d8c7', '#9ebc9f', '#7b9e87', '#567562'], 
                 domain: [30, 60, 120, 180] 
             }
         }
