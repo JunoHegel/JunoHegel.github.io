@@ -83,3 +83,37 @@ stopBtn.addEventListener('click', stopTimer);
 
 // Initialize the timer display immediately on load
 updateDisplay();
+
+// --- 6. Heatmap Generation ---
+async function renderHeatmap() {
+    const { data, error } = await db.from('study_sessions').select('created_at, duration_minutes');
+    if (error) { console.error("Error fetching data:", error); return; }
+
+    let dailyTotals = {};
+    data.forEach(session => {
+        const date = session.created_at.split('T')[0]; 
+        dailyTotals[date] = (dailyTotals[date] || 0) + session.duration_minutes;
+    });
+
+    const heatmapData = Object.keys(dailyTotals).map(dateStr => {
+        return { date: dateStr, total: dailyTotals[dateStr] };
+    });
+
+    const cal = new CalHeatmap();
+    cal.paint({
+        itemSelector: '#cal-heatmap',
+        domain: { type: 'month' },
+        subDomain: { type: 'day', width: 15, height: 15, gutter: 4 },
+        data: { source: heatmapData, x: 'date', y: 'total' },
+        date: { start: new Date(new Date().setMonth(new Date().getMonth() - 2)) }, 
+        range: 6, 
+        scale: {
+            color: {
+                type: 'threshold',
+                range: ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'], 
+                domain: [30, 60, 120, 180] 
+            }
+        }
+    });
+}
+renderHeatmap();
