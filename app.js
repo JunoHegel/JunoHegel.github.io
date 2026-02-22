@@ -8,7 +8,7 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const db = createClient(supabaseUrl, supabaseKey);
 
 // ==========================================
-// 2. DOM ELEMENTS
+// 2. DOM ELEMENTS & CONSTANTS
 // ==========================================
 const loginSection = document.getElementById('login-section');
 const appSection = document.getElementById('app-section');
@@ -18,6 +18,10 @@ const stopBtn = document.getElementById('stop-btn');
 const loginBtn = document.getElementById('login-btn');
 const logoutBtn = document.getElementById('logout-btn');
 
+// The SVG Circle for the animation
+const circle = document.querySelector('.progress-ring__circle');
+const circleCircumference = 722; // 2 * pi * radius (115)
+
 // ==========================================
 // 3. AUTHENTICATION LOGIC
 // ==========================================
@@ -25,12 +29,10 @@ async function checkUser() {
     const { data: { session } } = await db.auth.getSession();
     
     if (session) {
-        // User is logged in
         loginSection.style.display = 'none';
         appSection.style.display = 'block';
         renderHeatmap(); 
     } else {
-        // No user logged in
         loginSection.style.display = 'block';
         appSection.style.display = 'none';
     }
@@ -61,19 +63,30 @@ logoutBtn.addEventListener('click', async () => {
 });
 
 // ==========================================
-// 4. TIMER LOGIC
+// 4. TIMER & ANIMATION LOGIC
 // ==========================================
-let timeLeft = 50 * 60; // 50 minutes in seconds
+const totalTime = 50 * 60; // 50 minutes in seconds
+let timeLeft = totalTime; 
 let timerId = null;
 
 function updateDisplay() {
+    // 1. Update the text numbers
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
     display.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+    // 2. Update the visual green ring
+    // Calculate how much of the ring should be "empty"
+    const offset = circleCircumference - (timeLeft / totalTime) * circleCircumference;
+    circle.style.strokeDashoffset = offset;
 }
 
 function startTimer() {
     if (timerId !== null) return; 
+    
+    // Change start button color to show it's active
+    startBtn.style.backgroundColor = '#e9f8f0';
+    startBtn.style.color = '#23c45e';
     
     timerId = setInterval(() => {
         timeLeft--;
@@ -84,7 +97,11 @@ function startTimer() {
             timerId = null;
             saveSession(50); 
             alert("Focus session complete! Data logged.");
-            timeLeft = 50 * 60; 
+            
+            // Reset UI
+            timeLeft = totalTime; 
+            startBtn.style.backgroundColor = '#f0f0f4';
+            startBtn.style.color = '#a0a0a5';
             updateDisplay();
         }
     }, 1000);
@@ -103,7 +120,10 @@ function stopTimer() {
         alert(`Session stopped early. Logged ${minutesStudied} minutes.`);
     }
     
-    timeLeft = 50 * 60; 
+    // Reset UI
+    timeLeft = totalTime; 
+    startBtn.style.backgroundColor = '#f0f0f4';
+    startBtn.style.color = '#a0a0a5';
     updateDisplay();
 }
 
@@ -119,19 +139,13 @@ async function saveSession(minutes) {
 
     const { data, error } = await db
         .from('study_sessions')
-        .insert([
-            { 
-                duration_minutes: minutes, 
-                subject: subjectName,
-                study_method: method
-            }
-        ]);
+        .insert([{ duration_minutes: minutes, subject: subjectName, study_method: method }]);
 
     if (error) {
         console.error("Error saving data:", error);
     } else {
         console.log("Session logged successfully!");
-        renderHeatmap(); // Refresh the heatmap to show the new session
+        renderHeatmap(); 
     }
 }
 
@@ -139,17 +153,10 @@ async function saveSession(minutes) {
 // 6. HEATMAP LOGIC (FETCH & RENDER)
 // ==========================================
 async function renderHeatmap() {
-    // Clear the existing heatmap to prevent duplicates when refreshing
     document.getElementById('cal-heatmap').innerHTML = '';
 
-    const { data, error } = await db
-        .from('study_sessions')
-        .select('created_at, duration_minutes');
-
-    if (error) {
-        console.error("Error fetching data:", error);
-        return;
-    }
+    const { data, error } = await db.from('study_sessions').select('created_at, duration_minutes');
+    if (error) { console.error("Error fetching data:", error); return; }
 
     let dailyTotals = {};
     data.forEach(session => {
@@ -165,15 +172,15 @@ async function renderHeatmap() {
     cal.paint({
         itemSelector: '#cal-heatmap',
         domain: { type: 'month' },
-        subDomain: { type: 'day', width: 15, height: 15, gutter: 4 },
+        subDomain: { type: 'day', width: 15, height: 15, gutter: 4, radius: 4 }, // Added radius for rounded heatmap squares
         data: { source: heatmapData, x: 'date', y: 'total' },
         date: { start: new Date(new Date().setMonth(new Date().getMonth() - 2)) }, 
         range: 6, 
         scale: {
             color: {
                 type: 'threshold',
-                // Updated to aesthetic soft matcha greens
-                range: ['#f4f2ee', '#c3d8c7', '#9ebc9f', '#7b9e87', '#567562'], 
+                // Using the coral/pink tones from your reference UI
+                range: ['#f0f0f4', '#ffdcdc', '#ffb0b0', '#ff8484', '#ff6b6b'], 
                 domain: [30, 60, 120, 180] 
             }
         }
