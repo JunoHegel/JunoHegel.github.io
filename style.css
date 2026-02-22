@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fdfafb; color: #1c1c1e; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; overflow-x: hidden;}
-.container { background: #ffffff; padding: 30px; border-radius: 40px; box-shadow: 0 24px 48px rgba(255, 107, 107, 0.08); text-align: center; max-width: 420px; width: 100%; box-sizing: border-box; position: relative;}
+.container { background: #ffffff; padding: 30px; border-radius: 40px; box-shadow: 0 24px 48px rgba(255, 107, 107, 0.08); text-align: center; width: 100%; max-width: 420px; box-sizing: border-box; position: relative; transition: all 0.3s ease;}
 
 /* Header & Task Card */
 .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
@@ -22,27 +22,34 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fdfafb; 
 #time-display { font-size: 3.8rem; font-weight: 800; letter-spacing: -2px; color: #1c1c1e; margin: 0; transition: 0.3s;}
 .timer-text p { font-size: 0.85rem; color: #a0a0a5; margin: 5px 0 0 0; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;}
 
-/* Controls & Buttons */
-.controls { display: flex; justify-content: center; align-items: center; gap: 20px; }
-.btn-circle { border-radius: 50%; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: transform 0.2s; }
+/* Controls & Dynamic Buttons */
+.controls { display: flex; justify-content: center; align-items: center; gap: 20px; min-height: 80px; }
+.btn-circle { border-radius: 50%; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: all 0.2s ease; }
 .btn-circle:hover { transform: scale(1.05); }
-.btn-primary { width: 72px; height: 72px; background-color: #ff6b6b; color: white; font-size: 1.5rem; box-shadow: 0 8px 24px rgba(255, 107, 107, 0.4); }
-.btn-secondary { width: 54px; height: 54px; background-color: #f0f0f4; color: #a0a0a5; font-size: 1.2rem; }
-.config-toggle-btn { background: transparent; border: 1px solid #f0f0f4; color: #a0a0a5; padding: 10px 20px; border-radius: 20px; margin-top: 20px; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; cursor: pointer; transition: 0.2s; }
+
+/* Play/Pause Button */
+.btn-primary { width: 72px; height: 72px; background-color: #ff6b6b; color: white; font-size: 1.8rem; box-shadow: 0 8px 24px rgba(255, 107, 107, 0.4); }
+/* Stop Button (Appears when paused) */
+.btn-stop { width: 64px; height: 64px; background-color: #f0f0f4; color: #a0a0a5; font-size: 1.5rem; }
+.btn-stop:hover { background-color: #e0e0e5; color: #1c1c1e; }
+
+.config-toggle-btn { background: transparent; border: 1px solid #f0f0f4; color: #a0a0a5; padding: 10px 20px; border-radius: 20px; margin-top: 10px; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; cursor: pointer; transition: 0.2s; }
 .config-toggle-btn:hover { background: #fdfafb; color: #1c1c1e; }
 .pill-btn { width: 100%; padding: 16px; border: none; border-radius: 50px; background: #ff6b6b; color: white; font-weight: 700; font-size: 1rem; cursor: pointer; transition: background 0.2s;}
 .pill-btn:hover { background: #e85a5a; }
 
-/* Misc */
+/* Misc & Heatmap */
 hr { border: 0; border-top: 1px solid #f0f0f4; margin: 40px 0; }
 .heatmap-section h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: #a0a0a5; font-weight: 700; margin-bottom: 20px; }
-#cal-heatmap { display: flex; justify-content: center; overflow-x: auto;}
+#cal-heatmap { display: flex; justify-content: flex-start; overflow-x: auto; padding-bottom: 15px; }
+#cal-heatmap::-webkit-scrollbar { height: 6px; }
+#cal-heatmap::-webkit-scrollbar-track { background: transparent; }
+#cal-heatmap::-webkit-scrollbar-thumb { background: #f0f0f4; border-radius: 10px; }
+#cal-heatmap::-webkit-scrollbar-thumb:hover { background: #d0d0d5; }
 #login-section h1 { font-size: 1.5rem; color: #1c1c1e; margin-bottom: 20px;}
 input[type="email"], input[type="password"] { width: 100%; padding: 16px; margin-bottom: 15px; border: 1px solid #f0f0f4; border-radius: 16px; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; background-color: #fafafa;}
 
-/* ============================== */
-/* NEW SIDEBAR & STEPPER STYLES   */
-/* ============================== */
+/* Sidebar Overlay */
 .overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(28, 28, 30, 0.2); backdrop-filter: blur(4px); z-index: 999; }
 .sidebar { position: fixed; top: 0; right: -400px; width: 340px; height: 100vh; background: #ffffff; box-shadow: -10px 0 40px rgba(0,0,0,0.08); z-index: 1000; transition: right 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); padding: 40px 30px; box-sizing: border-box; display: flex; flex-direction: column; }
 .sidebar.open { right: 0; }
@@ -50,10 +57,15 @@ input[type="email"], input[type="password"] { width: 100%; padding: 16px; margin
 .sidebar-header h3 { margin: 0; font-size: 1.2rem; color: #1c1c1e; }
 .close-btn { background: #f0f0f4; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; color: #a0a0a5; font-weight: 800;}
 .close-btn:hover { background: #e0e0e4; color: #1c1c1e; }
-
 .setting-group { margin-bottom: 30px; text-align: left; }
 .setting-group label { display: block; font-weight: 700; font-size: 0.85rem; color: #a0a0a5; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;}
 .stepper { display: flex; align-items: center; justify-content: space-between; background: #fdfafb; border: 1px solid #f0f0f4; border-radius: 20px; padding: 6px; }
 .stepper button { width: 44px; height: 44px; background: white; border: 1px solid #f0f0f4; border-radius: 14px; font-size: 1.2rem; cursor: pointer; color: #1c1c1e; box-shadow: 0 4px 12px rgba(0,0,0,0.03); transition: 0.2s;}
 .stepper button:hover { transform: scale(1.05); }
 .stepper input { border: none; background: transparent; text-align: center; font-size: 1.3rem; font-weight: 800; width: 60px; color: #1c1c1e; outline: none; }
+
+/* RESPONSIVE DESKTOP LAYOUT */
+@media (min-width: 768px) {
+    .container { max-width: 700px; padding: 40px; }
+    #cal-heatmap { justify-content: center; overflow-x: hidden; }
+}
