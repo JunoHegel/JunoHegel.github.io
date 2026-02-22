@@ -1,49 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Law Study Tracker</title>
-    
-    <link rel="stylesheet" href="style.css">
-
-    <link rel="stylesheet" href="https://unpkg.com/cal-heatmap/dist/cal-heatmap.css">
-</head>
 <body>
     <div class="container">
         
         <div id="login-section">
             <h1>Tracker Login</h1>
-            <input type="email" id="email" placeholder="Email" style="margin-bottom: 10px; padding: 8px; width: 80%;">
-            <br>
-            <input type="password" id="password" placeholder="Password" style="margin-bottom: 10px; padding: 8px; width: 80%;">
-            <br>
-            <button id="login-btn">Log In</button>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Password">
+            <button id="login-btn" class="pill-btn">Log In</button>
             <p id="login-error" style="color: red; display: none;"></p>
         </div>
 
         <div id="app-section" style="display: none;">
-            <h1>Study Session</h1>
-            <button id="logout-btn" style="float: right; font-size: 0.8rem;">Log Out</button>
             
-            <div class="timer-section">
-                <h2 id="time-display">50:00</h2>
-                <div class="controls">
-                    <button id="start-btn">Start Focus</button>
-                    <button id="stop-btn">Stop/Log Session</button>
-                </div>
-                <div class="session-details">
-                    <select id="subject-select">
+            <div class="app-header">
+                <h2>Pomodoro Timer</h2>
+                <button id="logout-btn">Log Out</button>
+            </div>
+
+            <div class="task-card">
+                <div class="task-icon">⚖️</div>
+                <div class="task-info">
+                    <select id="subject-select" class="clean-select">
                         <option value="Civil Law">Civil Law</option>
                         <option value="Remedial Law">Remedial Law</option>
                         <option value="Criminal Law">Criminal Law</option>
                     </select>
-                    <select id="method-select">
+                    <select id="method-select" class="clean-select sub-select">
                         <option value="Active Recall">Active Recall</option>
                         <option value="Case Digests">Case Digests</option>
-                        <option value="Reading">Reading</option>
                     </select>
                 </div>
+            </div>
+            
+            <div class="timer-wrapper">
+                <svg class="progress-ring" width="260" height="260">
+                    <circle class="progress-ring__bg" stroke="#f0f0f4" stroke-width="14" fill="transparent" r="115" cx="130" cy="130"/>
+                    <circle class="progress-ring__circle" stroke="#23c45e" stroke-width="14" fill="transparent" r="115" cx="130" cy="130"/>
+                </svg>
+                <div class="timer-text">
+                    <h1 id="time-display">50:00</h1>
+                    <p>Stay focused for 50 minutes</p>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button id="start-btn" class="btn-circle btn-secondary">▶</button>
+                <button id="stop-btn" class="btn-circle btn-primary">⏸</button>
             </div>
 
             <hr>
@@ -61,4 +62,3 @@
     <script src="https://unpkg.com/cal-heatmap/dist/cal-heatmap.min.js"></script>
     <script src="app.js"></script>
 </body>
-</html>
