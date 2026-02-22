@@ -1,30 +1,42 @@
-// --- 1. Supabase Setup ---
+
+// ==========================================
+// 1. SUPABASE INITIALIZATION
+// ==========================================
 const { createClient } = supabase;
-const supabaseUrl = 'https://hxzcdicsrymdmxmonsgb.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4emNkaWNzcnltZG14bW9uc2diIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3NTU1NzksImV4cCI6MjA4NzMzMTU3OX0.CRq1y0fp0D9TWayM2v2eVMvoK4BtGVK0ZF6BSJ3rAkM';
+const supabaseUrl = 'https://hxzcdicsrymdmxmonsgb.supabase.co'; // <-- Paste your URL here
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4emNkaWNzcnltZG14bW9uc2diIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3NTU1NzksImV4cCI6MjA4NzMzMTU3OX0.CRq1y0fp0D9TWayM2v2eVMvoK4BtGVK0ZF6BSJ3rAkM';     // <-- Paste your Anon/Publishable Key here
 const db = createClient(supabaseUrl, supabaseKey);
 
-// --- Authentication Logic ---
+// ==========================================
+// 2. DOM ELEMENTS
+// ==========================================
 const loginSection = document.getElementById('login-section');
 const appSection = document.getElementById('app-section');
+const display = document.getElementById('time-display');
+const startBtn = document.getElementById('start-btn');
+const stopBtn = document.getElementById('stop-btn');
+const loginBtn = document.getElementById('login-btn');
+const logoutBtn = document.getElementById('logout-btn');
 
-// Check if you are already logged in
+// ==========================================
+// 3. AUTHENTICATION LOGIC
+// ==========================================
 async function checkUser() {
     const { data: { session } } = await db.auth.getSession();
+    
     if (session) {
-        // User is logged in, show the app
+        // User is logged in
         loginSection.style.display = 'none';
         appSection.style.display = 'block';
-        renderHeatmap(); // Only load the heatmap if logged in
+        renderHeatmap(); 
     } else {
-        // No user, show login screen
+        // No user logged in
         loginSection.style.display = 'block';
         appSection.style.display = 'none';
     }
 }
 
-// Handle Login Button Click
-document.getElementById('login-btn').addEventListener('click', async () => {
+loginBtn.addEventListener('click', async () => {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     const errorMsg = document.getElementById('login-error');
@@ -38,36 +50,30 @@ document.getElementById('login-btn').addEventListener('click', async () => {
         errorMsg.textContent = error.message;
         errorMsg.style.display = 'block';
     } else {
-        checkUser(); // Success! Refresh the view
+        errorMsg.style.display = 'none';
+        checkUser(); 
     }
 });
 
-// Handle Logout
-document.getElementById('logout-btn').addEventListener('click', async () => {
+logoutBtn.addEventListener('click', async () => {
     await db.auth.signOut();
-    checkUser(); // Refresh the view to show login screen
+    checkUser(); 
 });
 
-// Run this check immediately when the page loads
-checkUser();
-
-// --- 2. Timer Variables ---
+// ==========================================
+// 4. TIMER LOGIC
+// ==========================================
 let timeLeft = 50 * 60; // 50 minutes in seconds
 let timerId = null;
-const display = document.getElementById('time-display');
-const startBtn = document.getElementById('start-btn');
-const stopBtn = document.getElementById('stop-btn');
 
-// --- 3. Timer Functions ---
 function updateDisplay() {
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
-    // Formats the text to always show two digits (e.g., 09:05)
     display.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
 function startTimer() {
-    if (timerId !== null) return; // Prevents multiple timers from running at once
+    if (timerId !== null) return; 
     
     timerId = setInterval(() => {
         timeLeft--;
@@ -76,9 +82,9 @@ function startTimer() {
         if (timeLeft <= 0) {
             clearInterval(timerId);
             timerId = null;
-            saveSession(50); // Log the full 50 minutes
-            alert("Focus session complete! Data logged to Supabase.");
-            timeLeft = 50 * 60; // Reset timer for the next block
+            saveSession(50); 
+            alert("Focus session complete! Data logged.");
+            timeLeft = 50 * 60; 
             updateDisplay();
         }
     }, 1000);
@@ -90,7 +96,6 @@ function stopTimer() {
         timerId = null;
     }
     
-    // Calculate how many actual minutes were studied if you stopped early
     const minutesStudied = 50 - Math.floor(timeLeft / 60);
     
     if (minutesStudied > 0) {
@@ -98,11 +103,16 @@ function stopTimer() {
         alert(`Session stopped early. Logged ${minutesStudied} minutes.`);
     }
     
-    timeLeft = 50 * 60; // Reset timer
+    timeLeft = 50 * 60; 
     updateDisplay();
 }
 
-// --- 4. Database Function ---
+startBtn.addEventListener('click', startTimer);
+stopBtn.addEventListener('click', stopTimer);
+
+// ==========================================
+// 5. DATABASE LOGIC (INSERT DATA)
+// ==========================================
 async function saveSession(minutes) {
     const subjectName = document.getElementById('subject-select').value;
     const method = document.getElementById('method-select').value;
@@ -120,21 +130,26 @@ async function saveSession(minutes) {
     if (error) {
         console.error("Error saving data:", error);
     } else {
-        console.log("Session logged successfully!", data);
+        console.log("Session logged successfully!");
+        renderHeatmap(); // Refresh the heatmap to show the new session
     }
 }
 
-// --- 5. Event Listeners ---
-startBtn.addEventListener('click', startTimer);
-stopBtn.addEventListener('click', stopTimer);
-
-// Initialize the timer display immediately on load
-updateDisplay();
-
-// --- 6. Heatmap Generation ---
+// ==========================================
+// 6. HEATMAP LOGIC (FETCH & RENDER)
+// ==========================================
 async function renderHeatmap() {
-    const { data, error } = await db.from('study_sessions').select('created_at, duration_minutes');
-    if (error) { console.error("Error fetching data:", error); return; }
+    // Clear the existing heatmap to prevent duplicates when refreshing
+    document.getElementById('cal-heatmap').innerHTML = '';
+
+    const { data, error } = await db
+        .from('study_sessions')
+        .select('created_at, duration_minutes');
+
+    if (error) {
+        console.error("Error fetching data:", error);
+        return;
+    }
 
     let dailyTotals = {};
     data.forEach(session => {
@@ -163,4 +178,9 @@ async function renderHeatmap() {
         }
     });
 }
-renderHeatmap();
+
+// ==========================================
+// INITIALIZE ON LOAD
+// ==========================================
+updateDisplay();
+checkUser();
