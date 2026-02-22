@@ -18,9 +18,8 @@ const stopBtn = document.getElementById('stop-btn');
 const loginBtn = document.getElementById('login-btn');
 const logoutBtn = document.getElementById('logout-btn');
 
-// The SVG Circle for the animation
 const circle = document.querySelector('.progress-ring__circle');
-const circleCircumference = 722; // 2 * pi * radius (115)
+const circleCircumference = 722; 
 
 // ==========================================
 // 3. AUTHENTICATION LOGIC
@@ -65,26 +64,24 @@ logoutBtn.addEventListener('click', async () => {
 // ==========================================
 // 4. TIMER & ANIMATION LOGIC
 // ==========================================
-const totalTime = 50 * 60; // 50 minutes in seconds
+const totalTime = 50 * 60; // 50 minutes
 let timeLeft = totalTime; 
 let timerId = null;
 
 function updateDisplay() {
-    // 1. Update the text numbers
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
     display.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
-    // 2. Update the visual green ring
-    // Calculate how much of the ring should be "empty"
-    const offset = circleCircumference - (timeLeft / totalTime) * circleCircumference;
-    circle.style.strokeDashoffset = offset;
+    if (circle) {
+        const offset = circleCircumference - (timeLeft / totalTime) * circleCircumference;
+        circle.style.strokeDashoffset = offset;
+    }
 }
 
 function startTimer() {
     if (timerId !== null) return; 
     
-    // Change start button color to show it's active
     startBtn.style.backgroundColor = '#e9f8f0';
     startBtn.style.color = '#23c45e';
     
@@ -98,7 +95,6 @@ function startTimer() {
             saveSession(50); 
             alert("Focus session complete! Data logged.");
             
-            // Reset UI
             timeLeft = totalTime; 
             startBtn.style.backgroundColor = '#f0f0f4';
             startBtn.style.color = '#a0a0a5';
@@ -120,7 +116,6 @@ function stopTimer() {
         alert(`Session stopped early. Logged ${minutesStudied} minutes.`);
     }
     
-    // Reset UI
     timeLeft = totalTime; 
     startBtn.style.backgroundColor = '#f0f0f4';
     startBtn.style.color = '#a0a0a5';
@@ -153,7 +148,10 @@ async function saveSession(minutes) {
 // 6. HEATMAP LOGIC (FETCH & RENDER)
 // ==========================================
 async function renderHeatmap() {
-    document.getElementById('cal-heatmap').innerHTML = '';
+    const heatmapContainer = document.getElementById('cal-heatmap');
+    if (!heatmapContainer) return;
+    
+    heatmapContainer.innerHTML = ''; // Clear previous
 
     const { data, error } = await db.from('study_sessions').select('created_at, duration_minutes');
     if (error) { console.error("Error fetching data:", error); return; }
@@ -172,14 +170,13 @@ async function renderHeatmap() {
     cal.paint({
         itemSelector: '#cal-heatmap',
         domain: { type: 'month' },
-        subDomain: { type: 'day', width: 15, height: 15, gutter: 4, radius: 4 }, // Added radius for rounded heatmap squares
+        subDomain: { type: 'day', width: 14, height: 14, gutter: 4, radius: 4 },
         data: { source: heatmapData, x: 'date', y: 'total' },
         date: { start: new Date(new Date().setMonth(new Date().getMonth() - 2)) }, 
         range: 6, 
         scale: {
             color: {
                 type: 'threshold',
-                // Using the coral/pink tones from your reference UI
                 range: ['#f0f0f4', '#ffdcdc', '#ffb0b0', '#ff8484', '#ff6b6b'], 
                 domain: [30, 60, 120, 180] 
             }
