@@ -4,15 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Law Study Tracker</title>
-    
     <link rel="stylesheet" href="style.css">
-
     <link rel="stylesheet" href="https://unpkg.com/cal-heatmap/dist/cal-heatmap.css">
 </head>
 <body>
 
     <div class="container">
-        
         <div id="login-section">
             <h1>Tracker Login</h1>
             <input type="email" id="email" placeholder="Email">
@@ -22,7 +19,6 @@
         </div>
 
         <div id="app-section" style="display: none;">
-            
             <div class="app-header">
                 <h2>Pomodoro Timer</h2>
                 <button id="logout-btn">Log Out</button>
@@ -53,7 +49,7 @@
                 </svg>
                 <div class="timer-text">
                     <h1 id="time-display">50:00</h1>
-                    <p>Stay focused</p>
+                    <p id="mode-text">Stay focused</p>
                 </div>
             </div>
             
@@ -62,6 +58,8 @@
                 <button id="stop-btn" class="btn-circle btn-primary">⏸</button>
             </div>
 
+            <button id="configure-btn" class="config-toggle-btn">⚙️ Configure Focus</button>
+
             <hr>
 
             <div class="heatmap-section">
@@ -69,14 +67,48 @@
                 <div id="cal-heatmap"></div>
             </div>
         </div>
+    </div>
 
+    <div id="sidebar-overlay" class="overlay"></div>
+    <div id="settings-sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h3>Focus Settings</h3>
+            <button id="close-sidebar" class="close-btn">✕</button>
+        </div>
+        
+        <div class="setting-group">
+            <label>Focus Duration (min)</label>
+            <div class="stepper">
+                <button id="focus-minus">-</button>
+                <input type="number" id="focus-input" value="50" min="1" max="120" readonly>
+                <button id="focus-plus">+</button>
+            </div>
+        </div>
+
+        <div class="setting-group">
+            <label>Break Duration (min)</label>
+            <div class="stepper">
+                <button id="break-minus">-</button>
+                <input type="number" id="break-input" value="10" min="0" max="30" readonly>
+                <button id="break-plus">+</button>
+            </div>
+        </div>
+
+        <div class="setting-group">
+            <label>Iterations</label>
+            <div class="stepper">
+                <button id="iter-minus">-</button>
+                <input type="number" id="iter-input" value="1" min="1" max="10" readonly>
+                <button id="iter-plus">+</button>
+            </div>
+        </div>
+        
+        <button id="save-settings-btn" class="pill-btn" style="margin-top: auto;">Save & Apply</button>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://unpkg.com/cal-heatmap/dist/cal-heatmap.min.js"></script>
-    
     <script src="app.js"></script>
-
 </body>
 </html>
