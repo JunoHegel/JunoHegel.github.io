@@ -1,60 +1,132 @@
+/* Import a modern, clean geometric font */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
 body { 
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-    background-color: #f4f4f5; 
-    color: #18181b; 
+    font-family: 'Plus Jakarta Sans', sans-serif; 
+    background-color: #f7f5f0; /* Soft, warm film-like off-white */
+    color: #4a4a4a; /* Muted charcoal text, not harsh black */
     display: flex; 
     justify-content: center; 
-    padding-top: 8vh; 
+    align-items: center;
+    min-height: 100vh;
     margin: 0;
+    padding: 20px;
 }
 
 .container { 
     background: #ffffff; 
-    padding: 40px; 
-    border-radius: 16px; 
-    box-shadow: 0 4px 24px rgba(0,0,0,0.04); 
+    padding: 50px 40px; 
+    border-radius: 32px; /* Large modern rounded corners */
+    box-shadow: 0 20px 40px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.05); 
     text-align: center; 
-    max-width: 600px; 
-    width: 90%; 
+    max-width: 500px; 
+    width: 100%; 
+    border: 1px solid #f0eee9;
 }
 
-h1 { font-size: 1.2rem; color: #71717a; font-weight: 500; margin-bottom: 20px;}
+h1 { 
+    font-size: 1.1rem; 
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #9c9a96; 
+    font-weight: 600; 
+    margin-bottom: 10px;
+}
 
 #time-display { 
-    font-size: 5rem; 
-    font-weight: 700; 
-    letter-spacing: -2px;
-    margin: 10px 0 30px 0; 
+    font-size: 5.5rem; 
+    font-weight: 800; 
+    letter-spacing: -3px;
+    color: #2c363f; /* Deep muted navy/charcoal */
+    margin: 20px 0 40px 0; 
 }
 
+/* Modern Input Fields for Login */
+input[type="email"], input[type="password"] {
+    width: 100%;
+    padding: 16px;
+    margin-bottom: 15px;
+    border: 1px solid #e8e6e1;
+    border-radius: 16px;
+    background-color: #faf9f6;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+input[type="email"]:focus, input[type="password"]:focus {
+    outline: none;
+    border-color: #7b9e87; /* Soft sage green focus */
+}
+
+/* Beautiful Pill Buttons */
 button { 
-    padding: 12px 24px; 
-    margin: 5px; 
+    padding: 16px 32px; 
+    margin: 8px; 
     border: none; 
-    border-radius: 8px; 
+    border-radius: 50px; /* Pill shape */
     cursor: pointer; 
     font-size: 1rem; 
     font-weight: 600;
-    transition: all 0.2s;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-#start-btn { background: #18181b; color: #ffffff; }
-#start-btn:hover { background: #3f3f46; }
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+}
 
-#stop-btn { background: #e4e4e7; color: #18181b; }
-#stop-btn:hover { background: #d4d4d8; }
+#start-btn, #login-btn { 
+    background: #7b9e87; /* Soft aesthetic sage/matcha green */
+    color: #ffffff; 
+    width: 100%;
+    margin: 10px 0;
+}
 
-.session-details { margin-top: 25px; }
+#start-btn:hover, #login-btn:hover { background: #6a8c75; }
+
+#stop-btn { 
+    background: #f0eee9; 
+    color: #6d6b67; 
+    width: 100%;
+    margin: 10px 0;
+}
+
+#stop-btn:hover { background: #e3dfd8; color: #4a4a4a; }
+
+#logout-btn {
+    background: transparent;
+    color: #9c9a96;
+    padding: 8px 16px;
+    margin: 0;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+#logout-btn:hover { box-shadow: none; color: #d9534f; background: #fff0f0; }
+
+.session-details { 
+    margin-top: 30px; 
+    display: flex;
+    gap: 10px;
+}
+
 select { 
-    padding: 10px; 
-    margin: 5px; 
-    border-radius: 6px; 
-    border: 1px solid #e4e4e7; 
-    background: #fafafa;
-    font-size: 0.9rem;
+    flex: 1;
+    padding: 14px; 
+    border-radius: 16px; 
+    border: 1px solid #e8e6e1; 
+    background: #faf9f6;
+    color: #6d6b67;
+    font-size: 0.95rem;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    cursor: pointer;
+    appearance: none; /* Removes default OS styling */
 }
 
-hr { border: 0; border-top: 1px solid #e4e4e7; margin: 40px 0; }
+hr { border: 0; border-top: 1px solid #f0eee9; margin: 40px 0; }
 
-.heatmap-section h3 { font-size: 1rem; color: #71717a; font-weight: 500; margin-bottom: 20px; }
-#cal-heatmap { display: flex; justify-content: center; }
+.heatmap-section h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1.5px; color: #9c9a96; font-weight: 600; margin-bottom: 25px; }
+#cal-heatmap { display: flex; justify-content: center; opacity: 0.9; }
